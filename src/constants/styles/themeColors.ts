@@ -1,0 +1,4 @@
+export const THEME_COLORS = {
+  COLOR_LIGHT_MODE: '#F7F7F7',
+  COLOR_DARK_THEME: '#252525',
+};

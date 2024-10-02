@@ -1,0 +1,5 @@
+export const MAIN_COLORS = {
+  COLOR_LIGHT_BLUE: '#6C63FF',
+  COLOR_LIGHT: '#F7F7F7',
+  COLOR_DARK: '#252525',
+};
