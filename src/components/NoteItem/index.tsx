@@ -16,11 +16,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { MouseEvent, useState } from 'react';
 
-interface INoteProps extends INote {
-  index: number;
-}
-
-export const NoteItem = ({ title, isCompleted }: INoteProps) => {
+export const NoteItem = ({ title, isCompleted }: INote) => {
   const inputTitle = useSelector((state: RootState) => state.input.title);
 
   const [isEditNoteOpen, setIsEditNoteOpen] = useState(false);

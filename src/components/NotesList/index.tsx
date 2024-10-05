@@ -8,51 +8,44 @@ import { useEffect, useState } from 'react';
 
 export const NotesList = () => {
   const notes = useSelector((state: RootState) => state.notes.notes);
-  const filterByCompleteName = useSelector(
-    (state: RootState) => state.filter.filterByCompleteName,
-  );
-  const filterByTextName = useSelector(
-    (state: RootState) => state.filter.filterByTextName,
+
+  const { filterBySearch, filterByStatus } = useSelector(
+    (state: RootState) => state.filter,
   );
 
-  const [loadedNotes, setLoadedNotes] = useState<INote[]>([]);
+  const [clientY, setClientY] = useState(0);
+  const [visibleNotes, setVisibleNotes] = useState(notes.slice(0, 20));
 
   useEffect(() => {
-    document.addEventListener('scroll', scrollHandler);
-    setLoadedNotes(notes.slice(0, 20));
-    return () => removeEventListener('scroll', scrollHandler);
-  }, [notes]);
+    const handleScroll = () => {
+      const browserHeight = window.innerHeight;
+      const browserScrollHeight = document.documentElement.scrollHeight;
+      setClientY(window.scrollY);
 
-  const scrollHandler = (e: Event) => {
-    const target = e.target as Document;
-    if (
-      target.documentElement.scrollHeight -
-        (target.documentElement.scrollTop + window.innerHeight) <
-      50
-    ) {
-      addNotes();
-    }
-  };
+      if (clientY > browserScrollHeight - browserHeight - 200) {
+        setVisibleNotes((prev) => {
+          const additionalNotes = notes.slice(prev.length, prev.length + 20);
+          return [...prev, ...additionalNotes];
+        });
+      }
+    };
+    document.addEventListener('scroll', handleScroll);
 
-  const addNotes = () => {
-    setLoadedNotes((prev) => {
-      const newData = notes.slice(prev.length, prev.length + 20);
-      return [...prev, ...newData];
-    });
-  };
+    return () => document.removeEventListener('scroll', handleScroll);
+  }, [clientY]);
 
   const isEmpty = (array: INote[]) => {
     return array
       .filter((el: INote) => {
-        if (el.isCompleted && filterByCompleteName === 'Incomplete') {
+        if (el.isCompleted && filterByStatus === 'Incomplete') {
           return false;
-        } else if (!el.isCompleted && filterByCompleteName === 'Complete') {
+        } else if (!el.isCompleted && filterByStatus === 'Complete') {
           return false;
         } else {
           return true;
         }
       })
-      .filter((el: INote) => el.title.toLowerCase().includes(filterByTextName))
+      .filter((el: INote) => el.title.toLowerCase().includes(filterBySearch))
       .length === 0
       ? true
       : false;
@@ -61,25 +54,24 @@ export const NotesList = () => {
   const filterToDisplay = (array: INote[]) => {
     return array
       .filter((el: INote) => {
-        if (el.isCompleted && filterByCompleteName === 'Incomplete') {
+        if (el.isCompleted && filterByStatus === 'Incomplete') {
           return false;
-        } else if (!el.isCompleted && filterByCompleteName === 'Complete') {
+        } else if (!el.isCompleted && filterByStatus === 'Complete') {
           return false;
         } else {
           return true;
         }
       })
-      .filter((el: INote) => el.title.toLowerCase().includes(filterByTextName));
+      .filter((el: INote) => el.title.toLowerCase().includes(filterBySearch));
   };
 
-  return isEmpty(loadedNotes) ? (
+  return isEmpty(visibleNotes) ? (
     <EmptyNotes />
   ) : (
     <NotesListWrapper>
-      {filterToDisplay(loadedNotes).map((el: INote, index) => (
+      {filterToDisplay(visibleNotes).map((el: INote) => (
         <NoteItem
           key={el.title}
-          index={index}
           title={el.title}
           isCompleted={el.isCompleted}
         />

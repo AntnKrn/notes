@@ -2,13 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface IFilterState {
-  filterByCompleteName: string;
-  filterByTextName: string;
+  filterByStatus: string;
+  filterBySearch: string;
 }
 
 const initialState: IFilterState = {
-  filterByCompleteName: '',
-  filterByTextName: '',
+  filterByStatus: '',
+  filterBySearch: '',
 };
 
 export const counterSlice = createSlice({
@@ -16,10 +16,10 @@ export const counterSlice = createSlice({
   initialState,
   reducers: {
     filterByComplete: (state, action: PayloadAction<string>) => {
-      state.filterByCompleteName = action.payload;
+      state.filterByStatus = action.payload;
     },
     filterByText: (state, action: PayloadAction<string>) => {
-      state.filterByTextName = action.payload;
+      state.filterBySearch = action.payload;
     },
   },
 });
